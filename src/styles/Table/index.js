@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Table, Form } from "react-bootstrap";
+import { Button, Table, Form, Pagination } from "react-bootstrap";
 import CommonModal from "../Modal";
 
 export const ReactTable = ({
@@ -14,9 +14,13 @@ export const ReactTable = ({
   setAttributes,
   updateAccess,
   revokeAccess,
-  rejectDocumentAccess
+  rejectDocumentAccess,
+  maindata
 }) => {
   const [Modal, setModal] = useState(false);
+  const[ column, setColumn]= useState('')
+
+
  
 
   const handleCloseModal = () => {
@@ -26,23 +30,41 @@ export const ReactTable = ({
   const handleShowModal = (req, index) => {
     setRequestData(req);
     let fields=[]
+    
     if(req.approvedAttributeKeys.length > 0){
       fields= req.approvedAttributeKeys.map((item)=>{
         return {fieldName: item, value:true}
       })
     }
-    else{
+    else if(req.requestedAttributes && (Number(req.status)===0 || Number(req.status)===2)){
       fields= req.requestedAttributes.map((item)=>{
         return {fieldName: item, value:true}
       })
     }
     
    
-    console.log(req,"sjsjs")
+    setColumn('details')
     setAttributes(fields);
     setModal(true);
+    console.log(req, maindata,"main")
     setSelectedIndex(index);
   };
+
+
+  const handleShowRevokeModal = (req, index) => {
+    setRequestData(req);
+    let fields=[]
+    
+    if(req.approvedAttributeKeys.length > 0){
+      fields= req.approvedAttributeKeys.map((item)=>{
+        return {fieldName: item, value:false}
+      })
+    }
+    setColumn('revoke')
+   setAttributes(fields);
+     setModal(true);
+    setSelectedIndex(index);
+  }
 
   const handleCheckbox = (e) => {
     let updatedField=[...Attributes]
@@ -54,7 +76,7 @@ export const ReactTable = ({
   };
 
   const renderStatus = (status) => {
-    console.log(Number(status),"status")
+   
     if (Number(status) === 0) {
       return <p style={{ color: "orange" }}>Pending</p>;
     } else if (Number(status) === 1) {
@@ -62,51 +84,91 @@ export const ReactTable = ({
     } else if (Number(status) === 2) {
       return <p style={{ color: "red" }}> Rejected</p>;
     }
+    else if (Number(status) === 3) {
+      return <p style={{ color: "#800000" }}> Revoked</p>;
+    }
   };
+
+  const renderTitle=(RequestData, column)=>{
+    if(Number(RequestData.status)===0){
+      return "Approve / Reject Attributes"
+    }
+    else if(Number(RequestData.status)===1 && column==='details'){
+      return "Approved Attributes"
+
+    }
+    else if(Number(RequestData.status)===1 && column==='revoke'){
+      return "Revoke Attributes?"
+
+    }
+    else if(Number(RequestData.status)===2){
+      return "Rejected Attributes"
+    }
+    else if (Number(RequestData.status)===3 && RequestData.approvedAttributeKeys.length > 0){
+      return "Remaining Attribute Access"
+    }
+
+  }
 
   return (
     <div>
-      {/* ... (existing code) */}
+     
       <Table striped bordered hover>
         <thead>
           <tr>
             <th>Verifier</th>
             <th>Document Type</th>
             <th>Status</th>
-            <th>Click for More</th>
+            <th>Request Details</th>
+            <th>Revoke Access</th>
           </tr>
         </thead>
         <tbody>
-          {data &&
+          {data.length===0 ? <tr> <td colSpan="5" className="text-center">No records to display</td></tr> :
             data.map((request, index) => (
               <tr key={request.index}>
-                <td>{request.verifier}</td>
+                <td>{request.verifierEmail}</td>
                 <td>{request.documentType}</td>
                 <td>{renderStatus(request.status)}</td>
                 
                 <td>
+                  
                   <Button
                     variant="primary"
-                    onClick={() => handleShowModal(request, index)}
+                    onClick={() => handleShowModal(request, index, 'details')}
+                    disabled={Number(request.status)===3 && request.approvedAttributeKeys.length===0}
                   >
-                    Click for More
+                    Details
+                  </Button>
+                </td>
+                
+                <td>
+                  
+                  <Button
+                    variant="danger"
+                    onClick={() => handleShowRevokeModal(request, index, 'revoke')}
+                    disabled={Number(request.status)!==1}
+                  >
+                    Revoke
                   </Button>
                 </td>
               </tr>
             ))}
         </tbody>
       </Table>
+     
       <CommonModal
         showModal={Modal}
         handleCloseModal={handleCloseModal}
         handleSaveChanges={approve}
-        updateAccess={updateAccess}
+        //updateAccess={updateAccess}
+        title={renderTitle(RequestData, column)}
         revokeAccess={revokeAccess}
         rejectDocumentAccess={rejectDocumentAccess}
-        update={true}
-        approve={true}
-        reject={true}
-        revoke={true}
+        //update={true}
+        approve={![1,2,3].includes(Number(RequestData.status))}
+        reject={Number(RequestData.status)===0}
+        revoke={(Number(RequestData.status)==1 && column==='revoke')}
       >
         <Form>
           {Attributes.map((fieldName) => (
@@ -114,11 +176,23 @@ export const ReactTable = ({
               key={fieldName.fieldName}
               type="checkbox"
               checked={fieldName.value}
-              label={` ${fieldName.fieldName}`}
+             
               name={fieldName.fieldName}
               onChange={(e) => handleCheckbox(e)}
+              disabled={Number(RequestData.status)===2}
+              label={
+                <span
+                  style={{
+                    textDecoration: Number(RequestData.status)===2 ? "line-through":"none", 
+                    textDecorationThickness: "0.5px" 
+                  }}
+                >
+                  {` ${fieldName.fieldName}`}
+                </span>
+              }
+              
             />
-          ))}
+                ))}
         </Form>
       </CommonModal>
     </div>

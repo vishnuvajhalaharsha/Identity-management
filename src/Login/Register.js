@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, FormControl } from "react-bootstrap";
 
 
 
@@ -10,27 +10,34 @@ export const Register = (props) => {
       style={{ minHeight: "100vh", background: "#f8f9fa" }}
     >
       <Row className="align-items-center">
-        <Col>
-          <Form>
+        
+        <Row>
+        <Form>
             <Form.Group controlId="userRole">
               <Form.Label>Register as:</Form.Label>
               <Form.Control
                 as="select"
                 value={props.userRole}
                 onChange={props.handleRoleChange}
+                className="m-2"
               >
                 <option value="">Select Role</option>
                 <option value="User">User</option>
                 <option value="Verifier">Verifier</option>
               </Form.Control>
+              <FormControl type="email" placeholder="Register With Email Address" value={props.email} onChange={props.handleEmail}/>
             </Form.Group>
           </Form>
-        </Col>
-        <Col>
-          <Button variant="primary" onClick={props.handleRegister}>
+        </Row>
+          
+        
+        <div style={{alignItems:'center', justifyContent:'center'}} className="m-2">
+        <Button variant="primary" onClick={props.handleRegister}>
             {'Register With MetaMask'}
           </Button>
-        </Col>
+        </div>
+        
+        
       </Row>
     </Container>
   );

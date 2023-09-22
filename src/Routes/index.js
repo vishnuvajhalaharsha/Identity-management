@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
+// Protected route to navigate user if their access another dashboard
+
 export const ProtectedRoute = ({
   element: Component,
   allowedRoles,

@@ -1,6 +1,6 @@
 // Layout.js
 import React from "react";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import { Navbar, Nav, Container, Row } from "react-bootstrap";
 
 const Layout = ({ children }) => {
   return (
@@ -15,12 +15,12 @@ const Layout = ({ children }) => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      <Container>
-        {children}
+      <Container fluid className="content" style={{height:'60vh'}}>
+        <Row className="full-height">
+          {children}
+        </Row>
       </Container>
-      <footer>
-       hi
-      </footer>
+   
     </>
   );
 };

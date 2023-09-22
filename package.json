@@ -15,6 +15,7 @@
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
+    "solidity-coverage": "^0.8.4",
     "web-vitals": "^2.1.4",
     "web3": "^4.0.3"
   },
@@ -23,7 +24,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "copy-contracts": "node scripts/copyContracts.js"
+    "copy-contracts": "node scripts/copyContracts.js",
+    "mocha-test": "mocha src/tests/*.test.js"
   },
   "eslintConfig": {
     "extends": [
@@ -44,6 +46,8 @@
     ]
   },
   "devDependencies": {
-    "copyfiles": "^2.4.1"
+    "chai": "^4.3.8",
+    "copyfiles": "^2.4.1",
+    "mocha": "^10.2.0"
   }
 }

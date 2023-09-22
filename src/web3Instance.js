@@ -40,7 +40,7 @@ export const ContractWeb3 = () => {
     initWeb3();
   }, []);
 
- console.log(contractInstance,userAddress,"sjhs")
+
 
   return contractInstance, userAddress
 

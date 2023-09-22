@@ -9,7 +9,7 @@ import AuthContractABI from "./contracts/DocumentSharingContract.json";
 import Login from "./Login";
 import Layout from "./styles/Layout/index.js";
 
-const AuthContractAddress = "0xfbbf58DA8Af9812392A239546Ca09C9dD9bCA5Ec"; 
+const AuthContractAddress = "0x95c1785866b2AAea8EaF9697a6f9bF16B8113DD4"; 
 
 const web3 = new Web3(window.ethereum);
 

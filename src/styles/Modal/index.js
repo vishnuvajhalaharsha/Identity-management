@@ -13,13 +13,10 @@ export const CommonModal = (props) => {
       </Modal.Body>
       <Modal.Footer>
       {props.revoke  && 
-        <Button variant="primary" onClick={props.revokeAccess}>
+        <Button variant="danger" onClick={props.revokeAccess}>
           Revoke Access
         </Button> }
-        {props.update  && 
-        <Button variant="primary" onClick={props.updateAccess}>
-          Update Access
-        </Button> }
+        
       
         {props.reject && <Button variant="danger" onClick={props.rejectDocumentAccess}>
           Reject

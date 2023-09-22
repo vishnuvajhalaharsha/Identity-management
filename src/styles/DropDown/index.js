@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Form, Col, Button } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  Col,
+  Button,
+  ListGroup,
+  Spinner,
+  Row,
+} from "react-bootstrap";
 import {
   passport,
   drivingLicense,
@@ -12,7 +20,6 @@ const Dropdown = (props) => {
   const [formData, setFormData] = useState({});
   const [FormInput, setFormInput] = useState([]);
   const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
 
   const handleCategoryChange = (event) => {
     const category = event.target.value;
@@ -37,7 +44,8 @@ const Dropdown = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Process the form data here (e.g., send to a backend server)
+    event.stopPropagation();
+    
     if (props.user === "user") {
       props.handleSubmit(formData, selectedCategory);
     }
@@ -70,7 +78,10 @@ const Dropdown = (props) => {
       return drivingLicense.map((attribute) => {
         if (attribute.fieldName !== "Physical Copy") {
           return (
-            <Form.Group controlId={attribute.fieldName} key={attribute.fieldName}>
+            <Form.Group
+              controlId={attribute.fieldName}
+              key={attribute.fieldName}
+            >
               <Form.Label>{attribute.fieldName}</Form.Label>
               <Form.Control
                 type="text"
@@ -86,7 +97,10 @@ const Dropdown = (props) => {
       return loanAgreement.map((attribute) => {
         if (attribute.fieldName !== "Physical Copy") {
           return (
-            <Form.Group controlId={attribute.fieldName} key={attribute.fieldName}>
+            <Form.Group
+              controlId={attribute.fieldName}
+              key={attribute.fieldName}
+            >
               <Form.Label>{attribute.fieldName}</Form.Label>
               <Form.Control
                 type="text"
@@ -102,7 +116,10 @@ const Dropdown = (props) => {
       return bankStatement.map((attribute) => {
         if (attribute.fieldName !== "Physical Copy") {
           return (
-            <Form.Group controlId={attribute.fieldName} key={attribute.fieldName}>
+            <Form.Group
+              controlId={attribute.fieldName}
+              key={attribute.fieldName}
+            >
               <Form.Label>{attribute.fieldName}</Form.Label>
               <Form.Control
                 type="text"
@@ -116,8 +133,6 @@ const Dropdown = (props) => {
       });
     }
   };
-  
-  
 
   const renderVerfierAttributes = () => {
     if (selectedCategory === "passport") {
@@ -168,12 +183,18 @@ const Dropdown = (props) => {
         </Form.Group>
       ));
     } else {
-      return null; // Handle other categories or cases here
+      return null; 
     }
   };
 
   const handleFileChange = (e) => {
     props.setFile(e.target.files[0]);
+  };
+
+  const handleDropdownlist = (e, email) => {
+    e.preventDefault();
+    props.setReqAddress(email);
+    props.setMatchedEmails([]);
   };
 
   return (
@@ -182,12 +203,25 @@ const Dropdown = (props) => {
         <Form.Group controlId="category">
           {props.user === "verifier" && (
             <>
-              <Form.Label>User Address</Form.Label>
+              <Form.Label>User Email Address</Form.Label>
               <Form.Control
-                type="text"
+                type="email"
                 value={props.reAddress}
                 onChange={props.handleVerifierAddressChange}
+            
+                autoComplete="off"
               />
+              <ListGroup>
+                {props.matchedEmails.map((email) => (
+                  <ListGroup.Item
+                    key={email}
+                    action
+                    onClick={(e) => handleDropdownlist(e, email)}
+                  >
+                    {email}
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
             </>
           )}
           <Form.Label>Select Document Category</Form.Label>
@@ -201,29 +235,46 @@ const Dropdown = (props) => {
             <option value="driving">Driving License</option>
             <option value="loan">Loan Agreement</option>
             <option value="bank">Bank Statement</option>
-            {/* Add options for other categories */}
+           
           </Form.Control>
         </Form.Group>
         {props.user === "user" ? renderAttributes() : renderVerfierAttributes()}
         {props.user === "user" && (
-             <Form.Group controlId={'Physical Copy'}>
-             <Form.Label>{'Physical Copy'}</Form.Label>
-             <Form.Control
-                 type="file"
-                 name={'Physcial Copy'}
-                 onChange={handleFileChange}
-             />
-         </Form.Group>
-        //  <input className="m-2" type="file" onChange={handleFileChange} />
+          <Form.Group controlId={"Physical Copy"}>
+            <Form.Label>{"Physical Copy"}</Form.Label>
+            <Form.Control
+              type="file"
+              name={"Physcial Copy"}
+              onChange={handleFileChange}
+            />
+          </Form.Group>
+
         )}
         {props.user === "user" && (
-          <Button className="m-2" type="primary" onClick={props.uploadToPinata}>
-            Upload Document
+          <Button
+            variant="primary"
+            disabled={props.uploading}
+            className="m-2"
+            type="primary"
+            onClick={props.uploadToPinata}
+          >
+           {props.uploading && 
+           <Spinner
+           as="span"
+           animation="border"
+           size="sm"
+           role="status"
+           aria-hidden="true"
+         />
+           } 
+            <span>Upload Document</span>
           </Button>
         )}
         {props.user === "user" && <Button type="submit">Add Document</Button>}
         {props.user === "verifier" && (
-          <Button className="mt-4" type="submit">Send Request</Button>
+          <Button className="mt-4" type="submit">
+            Send Request
+          </Button>
         )}
       </Form>
     </Container>
